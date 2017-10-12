@@ -116,7 +116,11 @@ module Spaceship
 
       # Abstract class for push certificates. Check out the subclasses
       # DevelopmentPush, ProductionPush, WebsitePush and VoipPush
-      class PushCertificate < Certificate; end
+      class PushCertificate < Certificate
+        def self.portal_type
+          Spaceship::App
+        end
+      end
 
       # A push notification certificate for development environment
       class DevelopmentPush < PushCertificate; end
@@ -125,7 +129,11 @@ module Spaceship
       class ProductionPush < PushCertificate; end
 
       # A push notification certificate for websites
-      class WebsitePush < PushCertificate; end
+      class WebsitePush < PushCertificate
+        def self.portal_type
+          Spaceship::WebsitePush
+        end
+      end
 
       # A push notification certificate for the VOIP environment
       class VoipPush < PushCertificate; end
@@ -287,7 +295,7 @@ module Spaceship
 
           # look up the app_id by the bundle_id
           if bundle_id
-            app = Spaceship::App.set_client(client).find(bundle_id)
+            app = portal_type.set_client(client).find(bundle_id)
             raise "Could not find app with bundle id '#{bundle_id}'" unless app
             app_id = app.app_id
           end
